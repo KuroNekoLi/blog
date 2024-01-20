@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.jetbrains.compose)
     alias(libs.plugins.kobweb.application)
      alias(libs.plugins.kobwebx.markdown)
+     alias(libs.plugins.serialization.plugin)
 }
 
 group = "com.example.blogmultiplatform2"
@@ -40,6 +41,12 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 compileOnly(libs.kobweb.api) // Provided by Kobweb backend at runtime
+                implementation(libs.kobweb.api)
+                implementation(libs.kmongo.database)
+                implementation(libs.kotlinx.serialization)
+                // 添加SLF4J的依賴
+                implementation ("org.slf4j:slf4j-api:1.7.30")
+                runtimeOnly ("org.slf4j:slf4j-simple:1.7.30")
             }
         }
     }
