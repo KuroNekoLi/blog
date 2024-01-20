@@ -35,7 +35,8 @@ kotlin {
                 implementation(libs.kobweb.core)
                 implementation(libs.kobweb.silk)
                 implementation(libs.silk.icons.fa)
-                 implementation(libs.kobwebx.markdown)
+                implementation(libs.kobwebx.markdown)
+                implementation(libs.kotlinx.serialization)
             }
         }
         val jvmMain by getting {
@@ -44,9 +45,6 @@ kotlin {
                 implementation(libs.kobweb.api)
                 implementation(libs.kmongo.database)
                 implementation(libs.kotlinx.serialization)
-                // 添加SLF4J的依賴
-                implementation ("org.slf4j:slf4j-api:1.7.30")
-                runtimeOnly ("org.slf4j:slf4j-simple:1.7.30")
             }
         }
     }
