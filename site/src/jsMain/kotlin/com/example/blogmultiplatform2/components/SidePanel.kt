@@ -2,6 +2,7 @@ package com.example.blogmultiplatform2.components
 
 import androidx.compose.runtime.*
 import com.example.blogmultiplatform2.models.*
+import com.example.blogmultiplatform2.styles.*
 import com.example.blogmultiplatform2.util.*
 import com.example.blogmultiplatform2.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform2.util.Constants.SIDE_PANEL_WIDTH
@@ -11,6 +12,7 @@ import com.varabyte.kobweb.compose.foundation.layout.*
 import com.varabyte.kobweb.compose.ui.*
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.silk.components.graphics.*
+import com.varabyte.kobweb.silk.components.style.*
 import com.varabyte.kobweb.silk.components.text.*
 import org.jetbrains.compose.web.css.*
 
@@ -73,21 +75,26 @@ fun NavigationItem(
     onClick: () -> Unit
 ) {
     Row(
-        modifier = modifier
+        modifier = NavigationItemStyle.toModifier()
+            .then(modifier)
             .cursor(Cursor.Pointer)
             .onClick { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         VectorIcon(
             modifier = Modifier.margin(right = 10.px),
+            selected = selected,
             pathData = icon,
-            color = if (selected) Theme.Primary.hex else Theme.White.hex
         )
         SpanText(
             modifier = Modifier
+                .id("navigationText")
                 .fontFamily(FONT_FAMILY)
                 .fontSize(16.px)
-                .color(if (selected) Theme.Primary.rgb else Theme.White.rgb),
+                .thenIf(
+                    condition = selected,
+                    other = Modifier.color(Theme.Primary.rgb)
+                ),
             text = title
         )
     }
@@ -96,11 +103,12 @@ fun NavigationItem(
 @Composable
 fun VectorIcon(
     modifier: Modifier,
-    pathData: String,
-    color: String
+    selected: Boolean,
+    pathData: String
 ) {
     Svg(
         attrs = modifier
+            .id("svgParent")
             .width(24.px)
             .height(24.px)
             .toAttrs {
@@ -110,9 +118,15 @@ fun VectorIcon(
     ) {
         Path(
             attrs = Modifier
+                .id("vectorIcon")
+                .thenIf(
+                    condition = selected,
+                    other = Modifier.styleModifier {
+                        property("stroke",Theme.Primary.hex)
+                    }
+                )
                 .toAttrs {
                     attr("d", pathData)
-                    attr("stroke", color)
                     attr("stroke-width", "2")
                     attr("stroke-linecap", "2")
                     attr("stroke-linejoin", "round")
