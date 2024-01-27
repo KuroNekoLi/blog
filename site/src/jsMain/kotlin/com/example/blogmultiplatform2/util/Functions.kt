@@ -1,6 +1,7 @@
 package com.example.blogmultiplatform2.util
 
 import androidx.compose.runtime.*
+import com.example.blogmultiplatform2.navigation.Screen
 import com.varabyte.kobweb.core.*
 import kotlinx.browser.*
 import org.w3c.dom.*
@@ -16,7 +17,7 @@ fun isUserLoggedIn(content: @Composable () -> Unit) {
         userIdExists = if (!userId.isNullOrEmpty()) checkUserId(id = userId) else false
         userIdExists = true
         if (!(remembered && userIdExists)) {
-            context.router.navigateTo("/admin/login")
+            context.router.navigateTo(Screen.AdminLogin.route)
         }
     }
 

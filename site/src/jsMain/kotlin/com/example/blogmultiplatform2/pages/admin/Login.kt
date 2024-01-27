@@ -2,6 +2,7 @@ package com.example.blogmultiplatform2.pages.admin
 
 import androidx.compose.runtime.*
 import com.example.blogmultiplatform2.models.*
+import com.example.blogmultiplatform2.navigation.*
 import com.example.blogmultiplatform2.styles.*
 import com.example.blogmultiplatform2.util.*
 import com.example.blogmultiplatform2.util.Constants.FONT_FAMILY
@@ -124,7 +125,7 @@ fun LoginScreen() {
                                 )
                                 if (user != null) {
                                     rememberLoggedIn(remember = true, user = user)
-                                    context.router.navigateTo("/admin")
+                                    context.router.navigateTo(Screen.AdminHome.route)
                                 } else {
                                     errorText = "使用者不存在"
                                     delay(3000)

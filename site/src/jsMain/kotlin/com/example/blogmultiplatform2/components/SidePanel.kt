@@ -2,6 +2,7 @@ package com.example.blogmultiplatform2.components
 
 import androidx.compose.runtime.*
 import com.example.blogmultiplatform2.models.*
+import com.example.blogmultiplatform2.navigation.*
 import com.example.blogmultiplatform2.styles.*
 import com.example.blogmultiplatform2.util.*
 import com.example.blogmultiplatform2.util.Constants.FONT_FAMILY
@@ -11,6 +12,7 @@ import com.varabyte.kobweb.compose.dom.svg.*
 import com.varabyte.kobweb.compose.foundation.layout.*
 import com.varabyte.kobweb.compose.ui.*
 import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.core.*
 import com.varabyte.kobweb.silk.components.graphics.*
 import com.varabyte.kobweb.silk.components.style.*
 import com.varabyte.kobweb.silk.components.text.*
@@ -18,6 +20,7 @@ import org.jetbrains.compose.web.css.*
 
 @Composable
 fun SidePanel() {
+    val context = rememberPageContext()
     Column(
         modifier = Modifier
             .padding(leftRight = 40.px, topBottom = 50.px)
@@ -42,19 +45,21 @@ fun SidePanel() {
         NavigationItem(
             modifier = Modifier.margin(bottom = 24.px),
             title = "Home",
-            selected = true,
+            selected = context.route.path == Screen.AdminHome.route,
             icon = Res.PathIcon.home,
             onClick = {}
         )
         NavigationItem(
             modifier = Modifier.margin(bottom = 24.px),
             title = "Create",
+            selected = context.route.path == Screen.AdminCreate.route,
             icon = Res.PathIcon.create,
             onClick = {}
         )
         NavigationItem(
             modifier = Modifier.margin(bottom = 24.px),
-            title = "Posts",
+            title = "My Posts",
+            selected = context.route.path == Screen.AdminMyPosts.route,
             icon = Res.PathIcon.posts,
             onClick = {}
         )
@@ -88,7 +93,7 @@ fun NavigationItem(
         )
         SpanText(
             modifier = Modifier
-                .id("navigationText")
+                .id(Id.navigationText)
                 .fontFamily(FONT_FAMILY)
                 .fontSize(16.px)
                 .thenIf(
@@ -108,7 +113,7 @@ fun VectorIcon(
 ) {
     Svg(
         attrs = modifier
-            .id("svgParent")
+            .id(Id.svgPatent)
             .width(24.px)
             .height(24.px)
             .toAttrs {
@@ -118,11 +123,11 @@ fun VectorIcon(
     ) {
         Path(
             attrs = Modifier
-                .id("vectorIcon")
+                .id(Id.vectorIcon)
                 .thenIf(
                     condition = selected,
                     other = Modifier.styleModifier {
-                        property("stroke",Theme.Primary.hex)
+                        property("stroke", Theme.Primary.hex)
                     }
                 )
                 .toAttrs {
