@@ -2,11 +2,11 @@ package com.example.blogmultiplatform2
 
 import androidx.compose.runtime.*
 import com.varabyte.kobweb.compose.ui.modifiers.*
-import com.varabyte.kobweb.core.App
-import com.varabyte.kobweb.silk.SilkApp
-import com.varabyte.kobweb.silk.components.layout.Surface
-import com.varabyte.kobweb.silk.components.style.common.SmoothColorStyle
-import com.varabyte.kobweb.silk.components.style.toModifier
+import com.varabyte.kobweb.core.*
+import com.varabyte.kobweb.silk.*
+import com.varabyte.kobweb.silk.components.layout.*
+import com.varabyte.kobweb.silk.components.style.*
+import com.varabyte.kobweb.silk.components.style.common.*
 import org.jetbrains.compose.web.css.*
 
 @App

@@ -1,15 +1,12 @@
 package com.example.blogmultiplatform2.data
 
-import com.example.blogmultiplatform2.models.User
+import com.example.blogmultiplatform2.models.*
 import com.example.blogmultiplatform2.util.Constants.DATABASE_NAME
-import com.varabyte.kobweb.api.data.add
-import com.varabyte.kobweb.api.init.InitApi
-import com.varabyte.kobweb.api.init.InitApiContext
-import kotlinx.coroutines.reactive.awaitFirst
-import org.litote.kmongo.and
-import org.litote.kmongo.eq
-import org.litote.kmongo.reactivestreams.KMongo
-import org.litote.kmongo.reactivestreams.getCollection
+import com.varabyte.kobweb.api.data.*
+import com.varabyte.kobweb.api.init.*
+import kotlinx.coroutines.reactive.*
+import org.litote.kmongo.*
+import org.litote.kmongo.reactivestreams.*
 
 @InitApi
 fun initMongoDB(ctx: InitApiContext) {
@@ -38,14 +35,15 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
             null
         }
     }
+
     //page that require authorization
     override suspend fun checkUserId(id: String): Boolean {
-       return try {
-           val documentCount = userCollection.countDocuments(User::_id eq id).awaitFirst()
-           documentCount > 0
-       }catch (e:Exception){
-           context.logger.error(e.message.toString())
-           false
-       }
+        return try {
+            val documentCount = userCollection.countDocuments(User::_id eq id).awaitFirst()
+            documentCount > 0
+        } catch (e: Exception) {
+            context.logger.error(e.message.toString())
+            false
+        }
     }
 }

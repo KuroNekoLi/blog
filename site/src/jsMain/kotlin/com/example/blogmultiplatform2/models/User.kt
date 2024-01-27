@@ -1,7 +1,6 @@
 package com.example.blogmultiplatform2.models
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.*
 
 @Serializable
 actual data class User(
@@ -10,6 +9,7 @@ actual data class User(
     actual val username: String = "",
     actual val password: String = ""
 )
+
 @Serializable
 actual data class UserWithoutPassword(
     @SerialName(value = "_id")

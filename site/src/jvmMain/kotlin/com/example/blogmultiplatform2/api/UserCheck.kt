@@ -1,16 +1,14 @@
 package com.example.blogmultiplatform2.api
 
-import com.example.blogmultiplatform2.data.MongoDB
-import com.example.blogmultiplatform2.models.User
-import com.example.blogmultiplatform2.models.UserWithoutPassword
-import com.varabyte.kobweb.api.Api
-import com.varabyte.kobweb.api.ApiContext
-import com.varabyte.kobweb.api.data.getValue
-import com.varabyte.kobweb.api.http.setBodyText
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import java.nio.charset.StandardCharsets
-import java.security.MessageDigest
+import com.example.blogmultiplatform2.data.*
+import com.example.blogmultiplatform2.models.*
+import com.varabyte.kobweb.api.*
+import com.varabyte.kobweb.api.data.*
+import com.varabyte.kobweb.api.http.*
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
+import java.nio.charset.*
+import java.security.*
 
 @Api(routeOverride = "usercheck")
 suspend fun userCheck(context: ApiContext) {

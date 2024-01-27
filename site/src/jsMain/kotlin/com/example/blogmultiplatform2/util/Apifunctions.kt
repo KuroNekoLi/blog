@@ -1,11 +1,10 @@
 package com.example.blogmultiplatform2.util
 
-import com.example.blogmultiplatform2.models.User
-import com.example.blogmultiplatform2.models.UserWithoutPassword
-import com.varabyte.kobweb.browser.api
-import kotlinx.browser.window
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
+import com.example.blogmultiplatform2.models.*
+import com.varabyte.kobweb.browser.*
+import kotlinx.browser.*
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
 
 suspend fun checkUserExistence(user: User): UserWithoutPassword? {
     return try {
@@ -19,7 +18,8 @@ suspend fun checkUserExistence(user: User): UserWithoutPassword? {
         null
     }
 }
-suspend fun checkUserId(id:String):Boolean{
+
+suspend fun checkUserId(id: String): Boolean {
     return try {
         val result = window.api.tryPost(
             apiPath = "checkuserid",
@@ -27,7 +27,7 @@ suspend fun checkUserId(id:String):Boolean{
         )
 
         Json.decodeFromString(result.toString())
-    }catch (e:Exception){
+    } catch (e: Exception) {
         println(e.message.toString())
         false
     }

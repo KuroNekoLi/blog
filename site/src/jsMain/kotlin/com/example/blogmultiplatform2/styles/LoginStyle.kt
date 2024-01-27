@@ -1,16 +1,12 @@
 package com.example.blogmultiplatform2.styles
 
-import com.example.blogmultiplatform2.models.Theme
-import com.varabyte.kobweb.compose.css.CSSTransition
-import com.varabyte.kobweb.compose.ui.Modifier
-import com.varabyte.kobweb.compose.ui.graphics.Colors
-import com.varabyte.kobweb.compose.ui.modifiers.border
-import com.varabyte.kobweb.compose.ui.modifiers.transition
-import com.varabyte.kobweb.silk.components.style.ComponentStyle
-import com.varabyte.kobweb.silk.components.style.focus
-import org.jetbrains.compose.web.css.LineStyle
-import org.jetbrains.compose.web.css.ms
-import org.jetbrains.compose.web.css.px
+import com.example.blogmultiplatform2.models.*
+import com.varabyte.kobweb.compose.css.*
+import com.varabyte.kobweb.compose.ui.*
+import com.varabyte.kobweb.compose.ui.graphics.*
+import com.varabyte.kobweb.compose.ui.modifiers.*
+import com.varabyte.kobweb.silk.components.style.*
+import org.jetbrains.compose.web.css.*
 
 val LoginInputStyle by ComponentStyle {
     base {
@@ -19,7 +15,7 @@ val LoginInputStyle by ComponentStyle {
             style = LineStyle.Solid,
             color = Colors.Transparent
         )
-        .transition(CSSTransition(property = "border", duration = 300.ms))
+            .transition(CSSTransition(property = "border", duration = 300.ms))
     }
     focus {
         Modifier.border(
