@@ -1,0 +1,18 @@
+package com.example.blogmultiplatform2.pages.admin
+
+import androidx.compose.runtime.Composable
+import com.example.blogmultiplatform2.util.isUserLoggedIn
+import com.varabyte.kobweb.core.Page
+
+@Page
+@Composable
+fun HomeScreen() {
+    isUserLoggedIn {
+        HomePage()
+    }
+}
+
+@Composable
+fun HomePage(){
+    println("Admin Home Page")
+}

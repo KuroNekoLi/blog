@@ -154,21 +154,21 @@ fun LoginScreen() {
                                 //post request
                                 val user = checkUserExistence(
                                     user = User(
-                                        userName = username,
+                                        username = username,
                                         password = password
                                     )
                                 )
                                 if (user != null) {
                                     rememberLoggedIn(remember = true, user = user)
-                                    context.router.navigateTo("admin/home")
+                                    context.router.navigateTo("/admin")
                                 } else {
                                     errorText = "使用者不存在"
-                                    delay(300)
+                                    delay(3000)
                                     errorText = ""
                                 }
                             } else {
                                 errorText = "輸入欄位不可為空"
-                                delay(300)
+                                delay(3000)
                                 errorText = ""
 
                             }
@@ -193,7 +193,7 @@ fun LoginScreen() {
 private fun rememberLoggedIn(remember: Boolean, user: UserWithoutPassword? = null) {
     localStorage["remember"] = remember.toString()
     user?.let {
-        localStorage["userId"] = it.id
-        localStorage["username"] = it.userName
+        localStorage["userId"] = it._id
+        localStorage["username"] = it.username
     }
 }

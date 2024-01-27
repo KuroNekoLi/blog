@@ -2,12 +2,23 @@ package com.example.blogmultiplatform2.data
 
 import com.example.blogmultiplatform2.models.User
 import com.example.blogmultiplatform2.util.Constants.DATABASE_NAME
+import com.varabyte.kobweb.api.data.add
+import com.varabyte.kobweb.api.init.InitApi
 import com.varabyte.kobweb.api.init.InitApiContext
 import kotlinx.coroutines.reactive.awaitFirst
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 import org.litote.kmongo.reactivestreams.getCollection
+
+@InitApi
+fun initMongoDB(ctx: InitApiContext) {
+    System.setProperty(
+        "org.litote.mongo.test.mapping.service",
+        "org.litote.kmongo.serialization.SerializationClassMappingTypeService"
+    )
+    ctx.data.add(MongoDB(ctx))
+}
 
 class MongoDB(private val context: InitApiContext) : MongoRepository {
     private val client = KMongo.createClient()
@@ -18,7 +29,7 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
             userCollection
                 .find(
                     and(
-                        User::userName eq user.userName,
+                        User::username eq user.username,
                         User::password eq user.password
                     )
                 ).awaitFirst()
@@ -26,5 +37,15 @@ class MongoDB(private val context: InitApiContext) : MongoRepository {
             context.logger.error(e.message.toString())
             null
         }
+    }
+    //page that require authorization
+    override suspend fun checkUserId(id: String): Boolean {
+       return try {
+           val documentCount = userCollection.countDocuments(User::_id eq id).awaitFirst()
+           documentCount > 0
+       }catch (e:Exception){
+           context.logger.error(e.message.toString())
+           false
+       }
     }
 }
