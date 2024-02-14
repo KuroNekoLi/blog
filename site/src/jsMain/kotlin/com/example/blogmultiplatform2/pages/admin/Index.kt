@@ -20,6 +20,7 @@ fun HomePage() {
 
 @Composable
 fun HomeScreen() {
+    var overflowMenuOpened by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -29,7 +30,8 @@ fun HomeScreen() {
                 .fillMaxSize()
                 .maxWidth(PAGE_WIDTH.px)
         ) {
-            SidePanel() {}
+            SidePanel { overflowMenuOpened = true }
+            if (overflowMenuOpened) OverflowSidePanel { overflowMenuOpened = false }
         }
     }
 }
