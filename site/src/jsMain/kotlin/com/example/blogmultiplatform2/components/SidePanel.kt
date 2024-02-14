@@ -21,6 +21,7 @@ import com.varabyte.kobweb.silk.components.style.*
 import com.varabyte.kobweb.silk.components.style.breakpoint.*
 import com.varabyte.kobweb.silk.components.text.*
 import com.varabyte.kobweb.silk.theme.breakpoint.*
+import kotlinx.coroutines.*
 import org.jetbrains.compose.web.css.*
 
 @Composable
@@ -195,15 +196,59 @@ private fun CollapseSidePanel(onMenuClick: () -> Unit) {
     }
 }
 
+/**
+ * Overflow side panel
+ *
+ * @param onMenuClose
+ * .overflow(Overflow.Auto)修飾器用於控制元素內容的溢出行為。Overflow是一個CSS屬性，它決定了當元素的內容超出其指定大小時應如何處理。Overflow.Auto的含義是，僅當內容超出元素容器的大小時，才會顯示滾動條，允許用戶滾動查看隱藏的內容。
+ *
+ * 在CSS中，overflow屬性可以設置為以下值之一：
+ *
+ * visible：溢出的內容不會被裁剪，會呈現在元素框之外。
+ * hidden：溢出的內容會被裁剪，且不可見。
+ * scroll：元素會永遠顯示滾動條，無論內容是否溢出。
+ * auto：瀏覽器會根據內容是否溢出自動決定是否顯示滾動條。
+ *
+ * .scrollBehavior(ScrollBehavior.Smooth)
+ * .scrollBehavior(ScrollBehavior.Smooth)修飾器用於定義滾動行為。ScrollBehavior是一個CSS屬性，它允許您指定滾動發生時的動畫效果。ScrollBehavior.Smooth意味著當用戶滾動時，滾動動作會平滑進行，而不是瞬間跳轉到新的位置。
+ *
+ * CSS scroll-behavior屬性支持以下值：
+ *
+ * auto：滾動發生時不使用平滑滾動效果，這是默認行為。
+ * smooth：啟用平滑滾動效果，提供更舒適的滾動體驗。
+ */
 @Composable
 fun OverflowSidePanel(onMenuClose: () -> Unit) {
     val breakpoint = rememberBreakpoint()
+    val scope = rememberCoroutineScope()
+    var translateX by remember { mutableStateOf((-100).percent) }
+    var opacity by remember { mutableStateOf((0).percent) }
+
+    fun closePanel() {
+        scope.launch {
+            translateX = (-100).percent
+            opacity = 0.percent
+            delay(500)
+            onMenuClose()
+        }
+
+    }
+
+    LaunchedEffect(breakpoint) {
+        translateX = 0.percent
+        opacity = 100.percent
+        if (breakpoint > Breakpoint.MD) {
+            closePanel()
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(100.vh)
             .position(Position.Fixed)
             .zIndex(9)
+            .opacity(opacity)
+            .transition(CSSTransition(property = "opacity", duration = 300.ms))
             .backgroundColor(Theme.HalfBlack.rgb)
     ) {
         Column(
@@ -211,10 +256,14 @@ fun OverflowSidePanel(onMenuClose: () -> Unit) {
                 .padding(24.px)
                 .fillMaxHeight()
                 .width(if (breakpoint < Breakpoint.MD) 50.percent else 25.percent)
+                .translateX(translateX)
+                .transition(CSSTransition(property = "translate", duration = 300.ms))
+                .overflow(Overflow.Auto)
+                .scrollBehavior(ScrollBehavior.Smooth)
                 .backgroundColor(Theme.Secondary.rgb)
         ) {
             Row(
-                modifier = Modifier.margin(bottom = 60.px),
+                modifier = Modifier.margin(bottom = 60.px, top = 24.px),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 FaXmark(
@@ -222,7 +271,7 @@ fun OverflowSidePanel(onMenuClose: () -> Unit) {
                         .margin(right = 20.px)
                         .color(Colors.White)
                         .cursor(Cursor.Pointer)
-                        .onClick { onMenuClose() },
+                        .onClick { closePanel() },
                     size = IconSize.LG
                 )
                 Image(
