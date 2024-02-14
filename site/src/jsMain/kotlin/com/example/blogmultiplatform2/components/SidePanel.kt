@@ -5,21 +5,36 @@ import com.example.blogmultiplatform2.models.*
 import com.example.blogmultiplatform2.navigation.*
 import com.example.blogmultiplatform2.styles.*
 import com.example.blogmultiplatform2.util.*
+import com.example.blogmultiplatform2.util.Constants.COLLAPSED_PANEL_HEIGHT
 import com.example.blogmultiplatform2.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform2.util.Constants.SIDE_PANEL_WIDTH
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.dom.svg.*
 import com.varabyte.kobweb.compose.foundation.layout.*
 import com.varabyte.kobweb.compose.ui.*
+import com.varabyte.kobweb.compose.ui.graphics.*
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.core.*
 import com.varabyte.kobweb.silk.components.graphics.*
+import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.style.*
+import com.varabyte.kobweb.silk.components.style.breakpoint.*
 import com.varabyte.kobweb.silk.components.text.*
+import com.varabyte.kobweb.silk.theme.breakpoint.*
 import org.jetbrains.compose.web.css.*
 
 @Composable
-fun SidePanel() {
+fun SidePanel(onMenuClick: () -> Unit) {
+    val breakpoint = rememberBreakpoint()
+    if (breakpoint > Breakpoint.MD) {
+        SidePanelInternal()
+    } else {
+        CollapseSidePanel { onMenuClick() }
+    }
+}
+
+@Composable
+fun SidePanelInternal() {
     val context = rememberPageContext()
     Column(
         modifier = Modifier
@@ -145,6 +160,32 @@ fun VectorIcon(
                     attr("stroke-linecap", "2")
                     attr("stroke-linejoin", "round")
                 }
+        )
+    }
+}
+
+@Composable
+fun CollapseSidePanel(onMenuClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(COLLAPSED_PANEL_HEIGHT.px)
+            .padding(leftRight = 24.px)
+            .backgroundColor(Theme.Secondary.rgb),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        FaBars(
+            modifier = Modifier
+                .margin(right = 24.px)
+                .color(Colors.White)
+                .cursor(Cursor.Pointer)
+                .onClick { onMenuClick() },
+            size = IconSize.XL
+        )
+        Image(
+            modifier = Modifier.width(80.px),
+            src = Res.Image.logo,
+            description = "Logo Image"
         )
     }
 }
