@@ -27,3 +27,8 @@ fun isUserLoggedIn(content: @Composable () -> Unit) {
         println("loading....")
     }
 }
+fun logout(){
+    localStorage["remember"] = "false"
+    localStorage["userId"] = ""
+    localStorage["username"] = ""
+}
