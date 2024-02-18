@@ -22,5 +22,6 @@ fun AdminPageLayout(content: @Composable () -> Unit) {
             SidePanel { overflowMenuOpened = true }
             if (overflowMenuOpened) OverflowSidePanel { overflowMenuOpened = false }
         }
+        content()
     }
 }
