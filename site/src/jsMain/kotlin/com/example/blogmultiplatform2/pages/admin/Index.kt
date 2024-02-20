@@ -5,14 +5,18 @@ import com.example.blogmultiplatform2.components.*
 import com.example.blogmultiplatform2.models.*
 import com.example.blogmultiplatform2.navigation.*
 import com.example.blogmultiplatform2.util.*
+import com.example.blogmultiplatform2.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform2.util.Constants.PAGE_WIDTH
+import com.example.blogmultiplatform2.util.Constants.SIDE_PANEL_WIDTH
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.*
 import com.varabyte.kobweb.compose.ui.*
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.core.*
+import com.varabyte.kobweb.silk.components.graphics.*
 import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.style.breakpoint.*
+import com.varabyte.kobweb.silk.components.text.*
 import com.varabyte.kobweb.silk.theme.breakpoint.*
 import org.jetbrains.compose.web.css.*
 
@@ -27,7 +31,77 @@ fun HomePage() {
 @Composable
 fun HomeScreen() {
     AdminPageLayout {
+        HomeContent(joke = Joke(2, "some random joke...:some random joke...:some random joke..."))
         AddButton()
+    }
+}
+
+@Composable
+fun HomeContent(joke: Joke?) {
+    val breakpoint = rememberBreakpoint()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(left = if (breakpoint > Breakpoint.MD) SIDE_PANEL_WIDTH.px else 0.px),
+        contentAlignment = Alignment.Center
+    ) {
+        if (joke == null) {
+            println("loading a joke...")
+        }
+        joke?.let {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(topBottom = 50.px),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (joke.id != -1) {
+                    Image(
+                        modifier = Modifier
+                            .size(150.px)
+                            .margin(bottom = 50.px),
+                        src = Res.Image.laugh,
+                        description = "laugh image"
+                    )
+                }
+                if (joke.joke.contains("Q")) {
+                    SpanText(
+                        modifier = Modifier
+                            .margin(bottom = 14.px)
+                            .fillMaxWidth(60.percent)
+                            .textAlign(TextAlign.Center)
+                            .color(Theme.Secondary.rgb)
+                            .fontSize(28.px)
+                            .fontFamily(FONT_FAMILY)
+                            .fontWeight(FontWeight.Bold),
+                        text = joke.joke.split(":")[1]
+                    )
+                    SpanText(
+                        modifier = Modifier
+                            .fillMaxWidth(60.percent)
+                            .textAlign(TextAlign.Center)
+                            .color(Theme.HalfBlack.rgb)
+                            .fontSize(20.px)
+                            .fontFamily(FONT_FAMILY)
+                            .fontWeight(FontWeight.Normal),
+                        text = joke.joke.split(":").last()
+                    )
+                } else {
+                    SpanText(
+                        modifier = Modifier
+                            .margin(bottom = 14.px)
+                            .fillMaxWidth(60.percent)
+                            .textAlign(TextAlign.Center)
+                            .color(Theme.Secondary.rgb)
+                            .fontSize(28.px)
+                            .fontFamily(FONT_FAMILY)
+                            .fontWeight(FontWeight.Bold),
+                        text = joke.joke.split(":")[1]
+                    )
+                }
+            }
+        }
     }
 }
 
