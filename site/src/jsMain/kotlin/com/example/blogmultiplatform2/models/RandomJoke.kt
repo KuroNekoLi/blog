@@ -1,6 +1,9 @@
 package com.example.blogmultiplatform2.models
 
-data class Joke(
+import kotlinx.serialization.*
+
+@Serializable
+data class RandomJoke(
     val id: Int,
     val joke: String
 )

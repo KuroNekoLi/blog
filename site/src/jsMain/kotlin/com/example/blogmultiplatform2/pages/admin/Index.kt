@@ -3,11 +3,13 @@ package com.example.blogmultiplatform2.pages.admin
 import androidx.compose.runtime.*
 import com.example.blogmultiplatform2.components.*
 import com.example.blogmultiplatform2.models.*
-import com.example.blogmultiplatform2.navigation.*
+import com.example.blogmultiplatform2.navigation.Screen
 import com.example.blogmultiplatform2.util.*
 import com.example.blogmultiplatform2.util.Constants.FONT_FAMILY
+import com.example.blogmultiplatform2.util.Constants.HUMOR_API_URL
 import com.example.blogmultiplatform2.util.Constants.PAGE_WIDTH
 import com.example.blogmultiplatform2.util.Constants.SIDE_PANEL_WIDTH
+import com.varabyte.kobweb.browser.http.*
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.*
 import com.varabyte.kobweb.compose.ui.*
@@ -18,7 +20,12 @@ import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.style.breakpoint.*
 import com.varabyte.kobweb.silk.components.text.*
 import com.varabyte.kobweb.silk.theme.breakpoint.*
+import kotlinx.browser.*
+import kotlinx.coroutines.*
+import kotlinx.serialization.json.Json
 import org.jetbrains.compose.web.css.*
+import org.w3c.dom.*
+import kotlin.js.*
 
 @Page
 @Composable
@@ -30,14 +37,56 @@ fun HomePage() {
 
 @Composable
 fun HomeScreen() {
+    val scope = rememberCoroutineScope()
+    var randomJoke by remember { mutableStateOf<RandomJoke?>(null) }
+    LaunchedEffect(Unit) {
+        val date = localStorage["date"]
+        if (date != null) {
+            val difference = (Date.now() - date.toDouble())
+            val dayHasPassed = difference >= 86400000 //一天的毫秒
+            if (dayHasPassed) {
+                scope.launch {
+                    try {
+                        val result = window.http.get(HUMOR_API_URL).decodeToString()
+                        randomJoke =
+                            Json.decodeFromString<RandomJoke>(result) //string -> RandomJoke
+                        localStorage["date"] = Date.now().toString()
+                        localStorage["joke"] = result
+                    } catch (e: Exception) {
+                        println(e.message)
+                    }
+                }
+            } else {
+                try {
+                    randomJoke = localStorage["joke"]?.let { Json.decodeFromString<RandomJoke>(it) }
+                } catch (e: Exception) {
+                    randomJoke = RandomJoke(-1, "Unexpected Error.")
+                    println(e.message)
+                }
+
+            }
+        } else {
+            scope.launch {
+                try {
+                    val result = window.http.get(HUMOR_API_URL).decodeToString()
+                    randomJoke = Json.decodeFromString<RandomJoke>(result) //string -> RandomJoke
+                    localStorage["date"] = Date.now().toString()
+                    localStorage["joke"] = result
+                } catch (e: Exception) {
+                    println(e.message)
+                }
+            }
+        }
+    }
     AdminPageLayout {
-        HomeContent(joke = Joke(2, "some random joke...:some random joke...:some random joke..."))
+//        HomeContent(randomJoke = RandomJoke(2, "some random joke...:some random joke...:some random joke..."))
+        HomeContent(randomJoke = randomJoke)
         AddButton()
     }
 }
 
 @Composable
-fun HomeContent(joke: Joke?) {
+fun HomeContent(randomJoke: RandomJoke?) {
     val breakpoint = rememberBreakpoint()
     Box(
         modifier = Modifier
@@ -45,10 +94,10 @@ fun HomeContent(joke: Joke?) {
             .padding(left = if (breakpoint > Breakpoint.MD) SIDE_PANEL_WIDTH.px else 0.px),
         contentAlignment = Alignment.Center
     ) {
-        if (joke == null) {
+        if (randomJoke == null) {
             println("loading a joke...")
         }
-        joke?.let {
+        randomJoke?.let {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -56,7 +105,7 @@ fun HomeContent(joke: Joke?) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (joke.id != -1) {
+                if (randomJoke.id != -1) {
                     Image(
                         modifier = Modifier
                             .size(150.px)
@@ -65,39 +114,39 @@ fun HomeContent(joke: Joke?) {
                         description = "laugh image"
                     )
                 }
-                if (joke.joke.contains("Q")) {
+                if (randomJoke.joke.contains("Q")) {
                     SpanText(
                         modifier = Modifier
                             .margin(bottom = 14.px)
-                            .fillMaxWidth(60.percent)
+                            .fillMaxWidth(40.percent)
                             .textAlign(TextAlign.Center)
                             .color(Theme.Secondary.rgb)
                             .fontSize(28.px)
                             .fontFamily(FONT_FAMILY)
                             .fontWeight(FontWeight.Bold),
-                        text = joke.joke.split(":")[1]
+                        text = randomJoke.joke.split(":")[1].dropLast(1) //把A拿掉
                     )
                     SpanText(
                         modifier = Modifier
-                            .fillMaxWidth(60.percent)
+                            .fillMaxWidth(40.percent)
                             .textAlign(TextAlign.Center)
                             .color(Theme.HalfBlack.rgb)
                             .fontSize(20.px)
                             .fontFamily(FONT_FAMILY)
                             .fontWeight(FontWeight.Normal),
-                        text = joke.joke.split(":").last()
+                        text = randomJoke.joke.split(":").last()
                     )
                 } else {
                     SpanText(
                         modifier = Modifier
                             .margin(bottom = 14.px)
-                            .fillMaxWidth(60.percent)
+                            .fillMaxWidth(40.percent)
                             .textAlign(TextAlign.Center)
                             .color(Theme.Secondary.rgb)
                             .fontSize(28.px)
                             .fontFamily(FONT_FAMILY)
                             .fontWeight(FontWeight.Bold),
-                        text = joke.joke.split(":")[1]
+                        text = randomJoke.joke
                     )
                 }
             }
