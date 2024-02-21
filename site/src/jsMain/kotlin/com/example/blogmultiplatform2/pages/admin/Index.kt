@@ -3,13 +3,11 @@ package com.example.blogmultiplatform2.pages.admin
 import androidx.compose.runtime.*
 import com.example.blogmultiplatform2.components.*
 import com.example.blogmultiplatform2.models.*
-import com.example.blogmultiplatform2.navigation.Screen
+import com.example.blogmultiplatform2.navigation.*
 import com.example.blogmultiplatform2.util.*
 import com.example.blogmultiplatform2.util.Constants.FONT_FAMILY
-import com.example.blogmultiplatform2.util.Constants.HUMOR_API_URL
 import com.example.blogmultiplatform2.util.Constants.PAGE_WIDTH
 import com.example.blogmultiplatform2.util.Constants.SIDE_PANEL_WIDTH
-import com.varabyte.kobweb.browser.http.*
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.*
 import com.varabyte.kobweb.compose.ui.*
@@ -20,12 +18,7 @@ import com.varabyte.kobweb.silk.components.icons.fa.*
 import com.varabyte.kobweb.silk.components.style.breakpoint.*
 import com.varabyte.kobweb.silk.components.text.*
 import com.varabyte.kobweb.silk.theme.breakpoint.*
-import kotlinx.browser.*
-import kotlinx.coroutines.*
-import kotlinx.serialization.json.Json
 import org.jetbrains.compose.web.css.*
-import org.w3c.dom.*
-import kotlin.js.*
 
 @Page
 @Composable
@@ -37,46 +30,9 @@ fun HomePage() {
 
 @Composable
 fun HomeScreen() {
-    val scope = rememberCoroutineScope()
     var randomJoke by remember { mutableStateOf<RandomJoke?>(null) }
     LaunchedEffect(Unit) {
-        val date = localStorage["date"]
-        if (date != null) {
-            val difference = (Date.now() - date.toDouble())
-            val dayHasPassed = difference >= 86400000 //一天的毫秒
-            if (dayHasPassed) {
-                scope.launch {
-                    try {
-                        val result = window.http.get(HUMOR_API_URL).decodeToString()
-                        randomJoke =
-                            Json.decodeFromString<RandomJoke>(result) //string -> RandomJoke
-                        localStorage["date"] = Date.now().toString()
-                        localStorage["joke"] = result
-                    } catch (e: Exception) {
-                        println(e.message)
-                    }
-                }
-            } else {
-                try {
-                    randomJoke = localStorage["joke"]?.let { Json.decodeFromString<RandomJoke>(it) }
-                } catch (e: Exception) {
-                    randomJoke = RandomJoke(-1, "Unexpected Error.")
-                    println(e.message)
-                }
-
-            }
-        } else {
-            scope.launch {
-                try {
-                    val result = window.http.get(HUMOR_API_URL).decodeToString()
-                    randomJoke = Json.decodeFromString<RandomJoke>(result) //string -> RandomJoke
-                    localStorage["date"] = Date.now().toString()
-                    localStorage["joke"] = result
-                } catch (e: Exception) {
-                    println(e.message)
-                }
-            }
-        }
+        fetChRandomJoke { randomJoke = it }
     }
     AdminPageLayout {
 //        HomeContent(randomJoke = RandomJoke(2, "some random joke...:some random joke...:some random joke..."))
@@ -95,7 +51,7 @@ fun HomeContent(randomJoke: RandomJoke?) {
         contentAlignment = Alignment.Center
     ) {
         if (randomJoke == null) {
-            println("loading a joke...")
+            LoadingIndicator()
         }
         randomJoke?.let {
             Column(
