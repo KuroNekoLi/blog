@@ -6,6 +6,7 @@ import com.example.blogmultiplatform2.models.*
 import com.example.blogmultiplatform2.util.*
 import com.example.blogmultiplatform2.util.Constants.FONT_FAMILY
 import com.example.blogmultiplatform2.util.Constants.SIDE_PANEL_WIDTH
+import com.varabyte.kobweb.browser.file.*
 import com.varabyte.kobweb.compose.css.*
 import com.varabyte.kobweb.compose.foundation.layout.*
 import com.varabyte.kobweb.compose.ui.*
@@ -17,6 +18,7 @@ import com.varabyte.kobweb.silk.components.layout.*
 import com.varabyte.kobweb.silk.components.style.breakpoint.*
 import com.varabyte.kobweb.silk.components.text.*
 import com.varabyte.kobweb.silk.theme.breakpoint.*
+import kotlinx.browser.*
 import org.jetbrains.compose.web.attributes.*
 import org.jetbrains.compose.web.css.*
 import org.jetbrains.compose.web.dom.*
@@ -35,6 +37,8 @@ fun CreateScreen() {
     var popularSwitch by remember { mutableStateOf(false) }
     var mainSwitch by remember { mutableStateOf(false) }
     var sponsoredSwitch by remember { mutableStateOf(false) }
+    var thumbnailInputDisabled by remember { mutableStateOf(true) }
+    var fileName by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(Category.Programming) }
     AdminPageLayout {
         Box(
@@ -168,7 +172,35 @@ fun CreateScreen() {
                     selectedCategory = selectedCategory,
                     onCategorySelected = { selectedCategory = it }
                 )
-
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Switch(
+                        modifier = Modifier.margin(topBottom = 12.px),
+                        checked = !thumbnailInputDisabled,
+                        onCheckedChange = { thumbnailInputDisabled = !it },
+                        size = SwitchSize.MD
+                    )
+                    SpanText(
+                        modifier = Modifier
+                            .fontSize(14.px)
+                            .fontFamily(FONT_FAMILY)
+                            .color(Theme.HalfBlack.rgb),
+                        text = "Paste An Image Url Instead."
+                    )
+                }
+                ThumbnailUploader(
+                    modifier = Modifier.fillMaxWidth(),
+                    thumbnail = fileName,
+                    thumbnailInputDisabled = thumbnailInputDisabled,
+                    onThumbnailSelected = { filename, file ->
+                        fileName = filename
+                        println(filename)
+                        println(file)
+                    }
+                )
             }
         }
     }
@@ -261,6 +293,88 @@ fun CategoryDropdown(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ThumbnailUploader(
+    modifier: Modifier = Modifier,
+    thumbnail: String,
+    thumbnailInputDisabled: Boolean,
+    onThumbnailSelected: (String, String) -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .margin(topBottom = 20.px)
+            .height(54.px)
+    ) {
+        Input(
+            type = InputType.Text,
+            attrs = Modifier
+                .fillMaxSize()
+                .margin(right = 12.px)
+                .height(54.px)
+                .padding(leftRight = 20.px)
+                .backgroundColor(Theme.LightGray.rgb)
+                .borderRadius(r = 4.px)
+                .border(
+                    width = 0.px,
+                    style = LineStyle.None,
+                    color = Colors.Transparent
+                )
+                .outline(
+                    width = 0.px,
+                    style = LineStyle.None,
+                    color = Colors.Transparent
+                )
+                .fontFamily(FONT_FAMILY)
+                .fontSize(16.px)
+                .thenIf(
+                    condition = thumbnailInputDisabled,
+                    other = Modifier.disabled()
+                )
+                .toAttrs {
+                    attr("placeholder", "Thumbnail")
+                    attr("value", thumbnail)
+                }
+        )
+        Button(
+            attrs = Modifier
+                .onClick {
+                    document.loadDataUrlFromDisk (
+                        accept = "image/png, image/jpeg",
+                        onLoad = {
+                            onThumbnailSelected(filename, it)
+                        }
+                    )
+                }
+                .fillMaxHeight()
+                .padding(leftRight = 24.px)
+                .backgroundColor(if (thumbnailInputDisabled) Theme.Primary.rgb else Theme.LightGray.rgb)
+                .color(if (thumbnailInputDisabled) Theme.White.rgb else Theme.DarkGray.rgb)
+                .border(
+                    width = 0.px,
+                    style = LineStyle.None,
+                    color = Colors.Transparent
+                )
+                .outline(
+                    width = 0.px,
+                    style = LineStyle.None,
+                    color = Colors.Transparent
+                )
+                .borderRadius(r = 4.px)
+                .fontFamily(FONT_FAMILY)
+                .fontWeight(FontWeight.Medium)
+                .fontSize(14.px)
+                .thenIf(
+                    condition = !thumbnailInputDisabled,
+                    other = Modifier.disabled()
+                )
+                .toAttrs()
+        ){
+            SpanText("Upload")
         }
     }
 }
