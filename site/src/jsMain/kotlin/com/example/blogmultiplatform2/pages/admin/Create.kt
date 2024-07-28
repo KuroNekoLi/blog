@@ -14,6 +14,7 @@ import com.varabyte.kobweb.compose.ui.graphics.*
 import com.varabyte.kobweb.compose.ui.modifiers.*
 import com.varabyte.kobweb.core.*
 import com.varabyte.kobweb.silk.components.forms.*
+import com.varabyte.kobweb.silk.components.graphics.*
 import com.varabyte.kobweb.silk.components.layout.*
 import com.varabyte.kobweb.silk.components.style.breakpoint.*
 import com.varabyte.kobweb.silk.components.text.*
@@ -201,6 +202,7 @@ fun CreateScreen() {
                         println(file)
                     }
                 )
+                EditorControls(breakpoint = breakpoint)
             }
         }
     }
@@ -343,7 +345,7 @@ fun ThumbnailUploader(
         Button(
             attrs = Modifier
                 .onClick {
-                    document.loadDataUrlFromDisk (
+                    document.loadDataUrlFromDisk(
                         accept = "image/png, image/jpeg",
                         onLoad = {
                             onThumbnailSelected(filename, it)
@@ -373,8 +375,80 @@ fun ThumbnailUploader(
                     other = Modifier.disabled()
                 )
                 .toAttrs()
-        ){
+        ) {
             SpanText("Upload")
         }
+    }
+}
+
+@Composable
+fun EditorControls(breakpoint: Breakpoint = Breakpoint.MD) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        SimpleGrid(numColumns = numColumns(base = 1, sm = 2)) {
+            Row(
+                modifier = Modifier
+                    .backgroundColor(Theme.LightGray.rgb)
+                    .borderRadius(r = 4.px)
+                    .height(54.px)
+            ) {
+                EditorKey.values().forEach {
+                    EditorKeyView(it)
+                }
+            }
+            Box(contentAlignment = Alignment.CenterEnd) {
+                Button(
+                    attrs = Modifier
+                        .height(54.px)
+                        .margin(topBottom = if (breakpoint < Breakpoint.SM) 10.px else 0.px)
+                        .padding(leftRight = 24.px)
+                        .borderRadius(r = 4.px)
+                        .backgroundColor(Theme.LightGray.rgb)
+                        .color(Theme.DarkGray.rgb)
+                        .border(
+                            width = 0.px,
+                            style = LineStyle.None,
+                            color = Colors.Transparent
+                        )
+                        .outline(
+                            width = 0.px,
+                            style = LineStyle.None,
+                            color = Colors.Transparent
+                        )
+                        .onClick {
+
+                        }
+                        .toAttrs()
+                ) {
+                    SpanText(
+                        modifier = Modifier
+                            .fontFamily(FONT_FAMILY)
+                            .fontWeight(FontWeight.Medium)
+                            .fontSize(14.px),
+                        text = "Preview"
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun EditorKeyView(key: EditorKey) {
+    Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(leftRight = 12.px)
+            .borderRadius(r = 4.px)
+            .cursor(Cursor.Pointer)
+            .onClick {},
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            src = key.icon,
+            alt = "${key.name} Icon"
+        )
     }
 }
